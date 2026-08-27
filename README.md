@@ -4,12 +4,10 @@ Repositorio principal para la evidenciación sobre nuestro progreso en nuestro p
 
 ---
 
-Nombre del proyecto: NutriFind
+# Nombre del proyecto: NutriFind
 
----
 
-Descripcion: 
-
+# Descripcion: 
 
 NutriFind es una plataforma web en la cual buscamos optimizar tú tiempo y cuidar tu bolsillo.
 
