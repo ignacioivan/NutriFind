@@ -1,15 +1,14 @@
 # NutriFind
 
-
 Repositorio principal para la evidenciación sobre nuestro progreso en nuestro proyecto capstone
+
 ---
 
-
 Nombre del proyecto: NutriFind
-----------
+-
 
 Descripcion: 
-----------
+-
 
 NutriFind es una plataforma web en la cual buscamos optimizar tú tiempo y cuidar tu bolsillo.
 
@@ -19,7 +18,7 @@ Nuestro objetivo es agilizar la busqueda de tus productos, en esta plataforma po
 
 
 Integrantes del equipo con sus roles:
-----------
+-
 
 - Martíncito Muñoz: Data Engineer
   
