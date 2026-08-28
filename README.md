@@ -1,6 +1,6 @@
 # NutriFind
 
-Repositorio principal para la evidenciación sobre nuestro progreso en nuestro proyecto capstone
+Repositorio principal para la evidenciación sobre nuestro progreso dentro del proyecto capstone
 
 ---
 
