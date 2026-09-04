@@ -1,26 +1,69 @@
 # NutriFind
 
-Repositorio principal para la evidenciación sobre nuestro progreso dentro del proyecto capstone
+> Repositorio principal para la documentación y seguimiento de nuestro progreso dentro del proyecto Capstone.
 
 ---
 
-# Nombre del proyecto: NutriFind
+### Nombre del proyecto
 
+**NutriFind**
 
-# Descripcion: 
+### Descripción
 
-NutriFind es una plataforma web en la cual buscamos optimizar tú tiempo y cuidar tu bolsillo.
+**NutriFind** es una plataforma web diseñada para optimizar el tiempo de búsqueda y ayudar a cuidar el presupuesto de sus usuarios.
 
-Si quieres hacer un cambio en tus hábitos alimenticios ya sea por una enfermedad o por cuenta propia, las herramientas que esta plataforma 
+Nuestro objetivo es facilitar la búsqueda de productos para quienes desean cambiar sus hábitos alimenticios, ya sea por motivos de salud o por decisión personal, permitiendo encontrar y comparar distintas opciones de manera rápida y sencilla.
 
-Nuestro objetivo es agilizar la busqueda de tus productos, en esta plataforma podras comparar y encontrar la mejor opción para ese productos que estabas buscando.
+---
 
+### Tecnologías
 
-Integrantes del equipo con sus roles:
+Para la creación de la plataforma utilizaremos diversas tecnologías, seleccionadas con el objetivo de mantener un ecosistema ligero, moderno y amigable para el desarrollo.
 
+#### Lenguajes
 
-- Martíncito Muñoz: Data Engineer
-  
-- Pedro Mallea: Jefé de Proyecto
-  
-- Iván Sepulveda: Admin
+<div align="left">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=py,html,js,ts&theme=light" />
+  </a>
+</div>
+
+#### Frameworks
+
+<div align="left">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=astro,tailwindcss,fastapi&theme=light" />
+  </a>
+</div>
+
+#### Base de datos e infraestructura
+
+<div align="left">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=postgresql,supabase,cloudflare&theme=light" />
+  </a>
+</div>
+
+---
+
+### Instrucciones para su ejecución local
+
+---
+
+### Integrantes del equipo y sus roles
+
+| Integrante         | Rol              |
+| :----------------- | :--------------- |
+| **Martín Muñoz**   | Data Engineer    |
+| **Pedro Mallea**   | Jefe de Proyecto |
+| **Iván Sepulveda** | Administrador    |
+
+---
+
+### Metodología de trabajo
+
+---
+
+### Arquitectura
+
+---
