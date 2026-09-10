@@ -1,0 +1,32 @@
+---
+import "../styles/global.css";
+import Navbar from "../components/Navbar.astro";
+
+const { title = "NutriFind | Home" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+    <Navbar />
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+      <slot />
+    </main>
+
+    <footer
+      class="bg-white border-t border-gray-200 text-center py-6 text-gray-500 text-sm"
+    >
+      <p>
+        &copy; {new Date().getFullYear()} NutriFind. Todos los derechos reservados.
+      </p>
+    </footer>
+  </body>
+</html>
