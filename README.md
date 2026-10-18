@@ -62,13 +62,13 @@ Para la creación de la plataforma utilizaremos diversas tecnologías, seleccion
 
 ### Metodología de trabajo
 
-El desarrollo de **NutriFind** se gestiona bajo la **Metodología Ágil Scrum**, estructurando el ciclo de vida del proyecto en **5 Sprinst** iterativos e incrementales para asegurar entregas continuas de valor y adaptación temprana:
+El desarrollo de **NutriFind** se gestiona bajo la **Metodología Ágil Scrum**, estructurando el ciclo de vida del proyecto en **5 Sprints** iterativos e incrementales para asegurar entregas continuas de valor y adaptación temprana:
 
-- **Product Backlog y Estimación:** Los requerimientos se desglosan en **Historias de Usuario (HU)** priorizadas según el valor entregado al consumidor (método *MoSCoW* y estimadas en equipo utilizando puntos de historia bajo la escala **Fibonacci**.
+- **Product Backlog y Estimación:** Los requerimientos se desglosan en **Historias de Usuario (HU)** priorizadas según el valor entregado al consumidor (método *MoSCoW*) y estimadas en equipo utilizando puntos de historia bajo la escala **Fibonacci**.
 
-- **Criterios de Aceptación y Calidad (DoD):** Cada historia de usuario cuenta con escenarios de vlaidación estructurados (*Dado / Cuando / Entonces*) y una **Definition of Done (DoD)** dual (de negocio y técnica) que exige código versionado en GitHub, datos normalizados en **Supabase** e interfaz responsiva antes de dar una tarea por terminada.
+- **Criterios de Aceptación y Calidad (DoD):** Cada historia de usuario cuenta con escenarios de validación estructurados (*Dado / Cuando / Entonces*) y una **Definition of Done (DoD)** dual (de negocio y técnica) que exige código versionado en GitHub, datos normalizados en **Supabase** e interfaz responsiva antes de dar una tarea por terminada.
 
-- **Roles y Seguimiento Colaborativo:** El trabajo se coordina dividiendo responsabilidades claras entre **Gestión de Proyecto y Datos**, **Ingeniería de Datos / Web Scraping** y **Desarrollo Full-Stock / Infraestructura**, realizando revisiones de avance por Sprint.
+- **Roles y Seguimiento Colaborativo:** El trabajo se coordina dividiendo responsabilidades claras entre **Gestión de Proyecto y Datos**, **Ingeniería de Datos / Web Scraping** y **Desarrollo Full-Stack / Infraestructura**, realizando revisiones de avance por Sprint.
 
 ---
 
@@ -84,14 +84,11 @@ El desarrollo de **NutriFind** se gestiona bajo la **Metodología Ágil Scrum**,
 
 Para entender el recorrido de la información de principio a fin, el gráfico se divide en **dos flujos principales** que convergen en la base de datos:
 
-1. **FLujo e Consulta del Usuario (Izquierda a Derecha):**
-   - El **Usuario** accede desde su navegador pasando por la capa de seguridad y CDN de **Cloudflare Pages**
-   - Interactúa con el **Frontend ('NutriCode')**, contruido en **Astro 7** y **Tailwind CSS v4**
-   para las vistas principaes, buscador y comparador, junto con islas interactivas en **React 19** para visualizar los gráficos de evolución de precios.
+1. **Flujo de Consulta del Usuario (Izquierda a Derecha):**
+   - El **Usuario** accede desde su navegador pasando por la capa de seguridad y CDN de **Cloudflare Pages**.
+   - Interactúa con el **Frontend ('NutriCode')**, construido en **Astro 7** y **Tailwind CSS v4** para las vistas principales, buscador y comparador, junto con islas interactivas en **React 19** para visualizar los gráficos de evolución de precios.
    - Al realizar una búsqueda o aplicar filtros dietéticos, el Frontend consulta mediante peticiones HTTP/JSON a la **API RESTful en FastAPI**, la cual filtra y retorna los datos almacenados en **Supabase (PostgreSQL)**.
 
-2. **Flujo de Extracción Automatizada (Abajo / derecha hacia Base de Datos):**
-   - De forma programada e independientes al usuario, el **Motor de Web Scraping** (**Playwright + BeautifulSoup4**) navega por lossitios web de **Supermercados y Tiendas Especializadas**.
-   - Los datos crudos extraídos pasan por un **Pipeline de Normalización** en Python (limpieza de texto, estandrización de precios en '$ CLP' y clasificación de etiquetas nutricionales en formato 'JSONB') antes de actualizar el catálogo ('productos_integrales') y el registro histórico de precios en **Supabase**.
-
----
+2. **Flujo de Extracción Automatizada (Abajo / Derecha hacia Base de Datos):**
+   - De forma programada e independiente del usuario, el **Motor de Web Scraping** (**Playwright + BeautifulSoup4**) navega por los sitios web de **Supermercados y Tiendas Especializadas**.
+   - Los datos crudos extraídos pasan por un **Pipeline de Normalización** en Python (limpieza de texto, estandarización de precios en '$ CLP' y clasificación de etiquetas nutricionales en formato 'JSONB') antes de actualizar el catálogo ('productos_integrales') y el registro histórico de precios en **Supabase**.
