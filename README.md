@@ -52,27 +52,46 @@ Para la creación de la plataforma utilizaremos diversas tecnologías, seleccion
 
 ### Integrantes del equipo y sus roles
 
-| Integrante         | Rol              |
-| :----------------- | :--------------- |
-| **Martín Muñoz**   | Data Engineer    |
-| **Pedro Mallea**   | Jefe de Proyecto |
-| **Iván Sepulveda** | Administrador    |
+| Integrantes        | Roles                               |
+| :----------------- | :---------------------------------- |
+| **Iván Sepulveda** | Full-Stack Developer                |
+| **Martín Muñoz**   | Data Engineer / Backend & Scraping  |
+| **Pedro Mallea**   | Jefe de Proyecto / Gestión de datos |
 
 ---
 
 ### Metodología de trabajo
 
+El desarrollo de **NutriFind** se gestiona bajo la **Metodología Ágil Scrum**, estructurando el ciclo de vida del proyecto en **5 Sprinst** iterativos e incrementales para asegurar entregas continuas de valor y adaptación temprana:
+
+- **Product Backlog y Estimación:** Los requerimientos se desglosan en **Historias de Usuario (HU)** priorizadas según el valor entregado al consumidor (método *MoSCoW* y estimadas en equipo utilizando puntos de historia bajo la escala **Fibonacci**.
+
+- **Criterios de Aceptación y Calidad (DoD):** Cada historia de usuario cuenta con escenarios de vlaidación estructurados (*Dado / Cuando / Entonces*) y una **Definition of Done (DoD)** dual (de negocio y técnica) que exige código versionado en GitHub, datos normalizados en **Supabase** e interfaz responsiva antes de dar una tarea por terminada.
+
+- **Roles y Seguimiento Colaborativo:** El trabajo se coordina dividiendo responsabilidades claras entre **Gestión de Proyecto y Datos**, **Ingeniería de Datos / Web Scraping** y **Desarrollo Full-Stock / Infraestructura**, realizando revisiones de avance por Sprint.
+
 ---
 
 ### Arquitectura
-  
+
 **NutriFind** implementa una **arquitectura en capas** desacoplada para garantizar escalabilidad, rendimiento y facilidad de mantenimiento:
 
-  1. **Capa de Presentación (Frontend & Edge):** Desarrollada con **Astro** y **Tailwind CSS** para una carga rápida y diseño responsivo, integrando componentes en **React** para el dashboard interactivo de precios. Desplegada y protegida perimetralmente mediante **Cloudflare Pages**.
+<div align="center">
+  <img width="1497" height="428" alt="capas horizontal" src="https://github.com/user-attachments/assets/27f63e0f-2054-425f-be41-6591a1dc65d5" />
+</div>
 
-  2. **Capa de Lógica de Negocio (Backend API):** API RESTful construida con **FastAPI (Python)**, encargada de gestionar la lógica de búsqueda, filtrado por restricciones alimentarias, perfiles de usuario, listas de compras y exposición de métricas.
+#### ¿Cómo funciona el flujo dentro del diagrama?
 
-  3. **Capa de Extracción y Procesamiento (Web Scraping):** Motor automatizado basado en **Playwright** y **BeautifulSoup** que extrae periódicamente el catálogo y precios desde distintos supermercados, aplicando un pipeline de limpieza y normalización antes de guardar los datos.
-  4. **Capa de Persistencia (Base de Datos):** Base de datos relacional **PostgreSQL** alojada en **Supabase**, donde se centralizan los productos, tiendas, historial de precios y perfiles de usuarios.
+Para entender el recorrido de la información de principio a fin, el gráfico se divide en **dos flujos principales** que convergen en la base de datos:
+
+1. **FLujo e Consulta del Usuario (Izquierda a Derecha):**
+   - El **Usuario** accede desde su navegador pasando por la capa de seguridad y CDN de **Cloudflare Pages**
+   - Interactúa con el **Frontend ('NutriCode')**, contruido en **Astro 7** y **Tailwind CSS v4**
+   para las vistas principaes, buscador y comparador, junto con islas interactivas en **React 19** para visualizar los gráficos de evolución de precios.
+   - Al realizar una búsqueda o aplicar filtros dietéticos, el Frontend consulta mediante peticiones HTTP/JSON a la **API RESTful en FastAPI**, la cual filtra y retorna los datos almacenados en **Supabase (PostgreSQL)**.
+
+2. **Flujo de Extracción Automatizada (Abajo / derecha hacia Base de Datos):**
+   - De forma programada e independientes al usuario, el **Motor de Web Scraping** (**Playwright + BeautifulSoup4**) navega por lossitios web de **Supermercados y Tiendas Especializadas**.
+   - Los datos crudos extraídos pasan por un **Pipeline de Normalización** en Python (limpieza de texto, estandrización de precios en '$ CLP' y clasificación de etiquetas nutricionales en formato 'JSONB') antes de actualizar el catálogo ('productos_integrales') y el registro histórico de precios en **Supabase**.
 
 ---
