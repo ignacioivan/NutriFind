@@ -65,5 +65,14 @@ Para la creación de la plataforma utilizaremos diversas tecnologías, seleccion
 ---
 
 ### Arquitectura
+  
+**NutriFind** implementa una **arquitectura en capas** desacoplada para garantizar escalabilidad, rendimiento y facilidad de mantenimiento:
+
+  1. **Capa de Presentación (Frontend & Edge):** Desarrollada con **Astro** y **Tailwind CSS** para una carga rápida y diseño responsivo, integrando componentes en **React** para el dashboard interactivo de precios. Desplegada y protegida perimetralmente mediante **Cloudflare Pages**.
+
+  2. **Capa de Lógica de Negocio (Backend API):** API RESTful construida con **FastAPI (Python)**, encargada de gestionar la lógica de búsqueda, filtrado por restricciones alimentarias, perfiles de usuario, listas de compras y exposición de métricas.
+
+  3. **Capa de Extracción y Procesamiento (Web Scraping):** Motor automatizado basado en **Playwright** y **BeautifulSoup** que extrae periódicamente el catálogo y precios desde distintos supermercados, aplicando un pipeline de limpieza y normalización antes de guardar los datos.
+  4. **Capa de Persistencia (Base de Datos):** Base de datos relacional **PostgreSQL** alojada en **Supabase**, donde se centralizan los productos, tiendas, historial de precios y perfiles de usuarios.
 
 ---
