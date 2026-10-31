@@ -29,5 +29,5 @@ scrapers/.env
 datos_lider.json
 
 # cosas que no se deben subir por que dan igual
-*.mds
+*.md
 !README.md
