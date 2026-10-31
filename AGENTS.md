@@ -1,1 +1,0 @@
-NutriCode/AGENTS.md
