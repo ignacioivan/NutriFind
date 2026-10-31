@@ -27,3 +27,8 @@ pnpm-debug.log*
 venv/
 scrapers/.env
 datos_lider.json
+
+#claude y cosas que no se deben subir por que dan igual
+AGENTS.md
+CLAUDE.md
+CONTEXTO.md
