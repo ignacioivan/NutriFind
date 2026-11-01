@@ -1,5 +1,5 @@
 .empryo
 
 # archivos mds que no quiero que se suban jeje
-*.mds
+*.md
 !README.md
