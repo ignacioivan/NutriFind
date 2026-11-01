@@ -1,4 +1,6 @@
-.empryo
+.vscode/
+.claude/
+*.bak
 
 # archivos mds que no quiero que se suban jeje
 *.md

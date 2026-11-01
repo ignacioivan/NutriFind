@@ -1,7 +1,65 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/layout.astro";
+import Header from "../components/header.astro";
+import SearchForm from "../components/search-form.astro";
+import ProductGrid from "../components/product-grid.astro";
+import ErrorState from "../components/error-state.astro";
+import Footer from "../components/footer.astro";
+import { CATEGORIES } from "../lib/categories.ts";
+import { DataError, featuredProducts, type Product } from "../lib/products.ts";
+
+let featured: Product[] | null = null;
+try {
+  featured = await featuredProducts(8);
+} catch (e) {
+  if (!(e instanceof DataError)) throw e;
+  console.error(e.message);
+  Astro.response.status = 503;
+}
 ---
 
-<Layout title="NutriFind | Inicio"> 
-  
+<Layout>
+  <Header />
+  <main class="flex-1">
+    <section class="border-b border-ink">
+      <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[1.15fr_1fr] lg:items-end lg:gap-12">
+        <div>
+          <h1 class="font-display text-[clamp(2.75rem,9vw,5.5rem)] font-black uppercase leading-[0.9] tracking-tighter">
+            Precio justo <em class="bg-gold px-2 not-italic [box-decoration-break:clone]">sin gluten</em>
+          </h1>
+          <p class="mt-5 max-w-md text-lg">Comparamos supermercados por ti. Escribe lo que necesitas y te mostramos dónde está más barato.</p>
+        </div>
+        <div class="min-w-0">
+          <SearchForm large />
+          <nav aria-label="Búsquedas rápidas" class="-mx-4 mt-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+            <ul class="flex gap-2">
+              {
+                CATEGORIES.map((c) => (
+                  <li>
+                    <a href={`/buscar?q=${encodeURIComponent(c)}`} class="label-mono inline-flex min-h-11 items-center whitespace-nowrap border-[1.5px] border-ink bg-white px-3 hover:bg-ink hover:text-paper">
+                      {c}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    {
+      featured ? (
+        <section class="mx-auto max-w-7xl sm:px-6" aria-labelledby="featured-title">
+          <h2 id="featured-title" class="px-4 pb-3 pt-8 font-display text-2xl font-black uppercase tracking-tight sm:px-0">
+            Productos sin gluten
+          </h2>
+          <ProductGrid products={featured} />
+        </section>
+      ) : (
+        <ErrorState title="No pudimos cargar los productos" message="La base de datos no respondió. Intenta de nuevo en unos segundos." />
+      )
+    }
+  </main>
+  <Footer />
 </Layout>

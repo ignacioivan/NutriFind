@@ -1,0 +1,15 @@
+services:
+  web:
+    build: .
+    ports:
+      - "4321:4321"
+    volumes:
+      - .:/app
+      # node_modules y .astro propios del contenedor: no se mezclan con los del host.
+      - node_modules:/app/node_modules
+      - astro_cache:/app/.astro
+    # .env llega por el bind mount; astro dev lo lee directamente.
+
+volumes:
+  node_modules:
+  astro_cache:

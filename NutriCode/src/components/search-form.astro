@@ -1,0 +1,22 @@
+---
+import LiveSearch from "./live-search.tsx";
+
+interface Props {
+  q?: string;
+  large?: boolean;
+}
+const { q = "", large = false } = Astro.props;
+---
+
+<form action="/buscar" method="get" role="search" class:list={["relative flex w-full border-2 border-ink bg-white", large ? "min-h-14" : "min-h-11"]}>
+  <label for="q" class="sr-only">Buscar productos sin gluten</label>
+  <LiveSearch
+    client:idle
+    initialValue={q}
+    placeholder={large ? "¿Qué buscas? Pan, harina, galletas…" : "¿Qué buscas?"}
+    inputClass={`min-w-0 flex-1 bg-transparent px-3 placeholder:text-muted focus-visible:outline-offset-[-3px] ${large ? "text-lg" : "text-base"}`}
+  />
+  <button type="submit" class="label-mono bg-ink px-4 font-semibold text-paper hover:bg-ink/85">
+    [ Buscar ]
+  </button>
+</form>

@@ -1,0 +1,10 @@
+{
+  // El adaptador @astrojs/cloudflare completa main/assets al hacer build (publica solo dist/client).
+  "name": "nutrifind",
+  "compatibility_date": "2026-10-30",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "SUPABASE_URL": "https://pzbovbdcaikjirhymfeg.supabase.co"
+  }
+  // SUPABASE_ANON_KEY va como secreto: `npx wrangler secret put SUPABASE_ANON_KEY`. En local se lee de .env
+}

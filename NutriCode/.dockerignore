@@ -1,0 +1,10 @@
+node_modules
+dist
+.astro
+.wrangler
+.playwright-mcp
+scrapers
+docs
+.env
+.env.*
+.dev.vars

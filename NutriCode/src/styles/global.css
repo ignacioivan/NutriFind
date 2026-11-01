@@ -1,1 +1,35 @@
 @import "tailwindcss";
+
+@theme {
+  --color-paper: #f4f1ea;
+  --color-ink: #111111;
+  --color-gold: #d19d38;
+  --color-best-price: #15803d;
+  --color-muted: #5c5c5c;
+
+  --font-display: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --font-sans: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+}
+
+@layer base {
+  html {
+    @apply bg-paper text-ink font-sans antialiased;
+  }
+
+  input[type="search"]::-webkit-search-cancel-button {
+    appearance: none;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+}
+
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}

@@ -1,0 +1,43 @@
+---
+import type { Product } from "../lib/products.ts";
+import { formatCLP, imageUrl } from "../lib/format.ts";
+
+interface Props {
+  product: Product;
+  compact?: boolean;
+}
+const { product, compact = false } = Astro.props;
+const image = product.images[0];
+---
+
+<a href={`/producto/${product.id}`} class="group flex h-full flex-col p-3 sm:p-4 focus-visible:outline-offset-[-3px]">
+  <div class="relative grid aspect-square place-items-center border border-ink bg-white">
+    <span class="label-mono text-muted" aria-hidden="true" hidden={Boolean(image)}>Sin imagen</span>
+    {
+      image && (
+        <img
+          src={imageUrl(image, 300)}
+          alt=""
+          width="300"
+          height="300"
+          loading="lazy"
+          decoding="async"
+          onerror="this.previousElementSibling.hidden=false;this.remove()"
+          transition:name={`img-${product.id}`}
+          class="absolute inset-0 size-full object-contain p-3 transition-transform duration-200 group-hover:scale-[1.03] motion-reduce:transition-none"
+        />
+      )
+    }
+  </div>
+  <p class="label-mono mt-3 flex justify-between gap-2 text-muted">
+    <span class="truncate">{product.brand}</span>
+    {product.size && <span class="shrink-0">{product.size}</span>}
+  </p>
+  <h3 class:list={["mt-1 mb-3 line-clamp-2 font-bold leading-snug group-hover:underline", compact ? "text-sm" : "text-[0.95rem]"]} title={product.name}>
+    {product.name}
+  </h3>
+  <p class="mt-auto flex items-baseline justify-between border-t-[6px] border-ink pt-1.5">
+    <span class:list={["font-black tabular-nums", compact ? "text-lg" : "text-2xl"]}>{formatCLP(product.price)}</span>
+    <span class="label-mono">{product.store}</span>
+  </p>
+</a>

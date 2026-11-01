@@ -1,0 +1,101 @@
+---
+import Layout from "../../layouts/layout.astro";
+import Header from "../../components/header.astro";
+import ProductGallery from "../../components/product-gallery.astro";
+import StorePrices from "../../components/store-prices.astro";
+import ProductGrid from "../../components/product-grid.astro";
+import ErrorState from "../../components/error-state.astro";
+import Footer from "../../components/footer.astro";
+import { formatCLP, formatDate } from "../../lib/format.ts";
+import { DataError, getProduct, similarProducts, type Product } from "../../lib/products.ts";
+
+const id = Number(Astro.params.id);
+if (!/^\d+$/.test(Astro.params.id ?? "") || !Number.isSafeInteger(id)) return Astro.rewrite("/404");
+
+let product: Product | null = null;
+let similar: Product[] = [];
+let failed = false;
+try {
+  product = await getProduct(id);
+  if (product) similar = await similarProducts(product, 4);
+} catch (e) {
+  if (!(e instanceof DataError)) throw e;
+  console.error(e.message);
+  failed = true;
+  Astro.response.status = 503;
+}
+if (!failed && !product) return Astro.rewrite("/404");
+---
+
+<Layout
+  title={product ? `${product.name} — ${formatCLP(product.price)} | NutriFind` : "NutriFind"}
+  description={product ? `${product.name} (${product.brand}) a ${formatCLP(product.price)} en ${product.store}.` : undefined}
+>
+  <Header compact />
+  <main class="flex-1">
+    {
+      !product ? (
+        <ErrorState title="No pudimos cargar el producto" message="La base de datos no respondió. Intenta de nuevo en unos segundos." />
+      ) : (
+        <>
+          <article class="mx-auto grid max-w-7xl gap-8 px-4 py-6 sm:px-6 lg:grid-cols-[1fr_1.15fr] lg:gap-12 lg:py-10">
+            <div>
+              <a href="/" data-back class="label-mono mb-4 inline-flex min-h-11 items-center hover:underline">← Volver</a>
+              <ProductGallery images={product.images} alt={product.name} productId={product.id} />
+            </div>
+            <div class="flex flex-col gap-5 lg:pt-15">
+              <div>
+                <p class="label-mono">{product.brand}{product.size && ` · ${product.size}`}</p>
+                <h1 class="mt-2 font-display text-[clamp(1.75rem,4vw,2.75rem)] font-black leading-[1.02] tracking-tight">{product.name}</h1>
+                <p class="mt-3 inline-block bg-gold px-2 py-1 text-sm font-black uppercase">Sin gluten</p>
+              </div>
+              <StorePrices product={product} />
+              <section class="border-2 border-ink bg-white" aria-labelledby="info-title">
+                <h2 id="info-title" class="border-b-8 border-ink px-3 py-2 font-display text-lg font-black uppercase">Información</h2>
+                <dl class="grid grid-cols-[8rem_1fr]">
+                  <dt class="label-mono border-b border-ink p-3 text-muted">Marca</dt>
+                  <dd class="border-b border-ink p-3">{product.brand}</dd>
+                  {product.size && (
+                    <>
+                      <dt class="label-mono border-b border-ink p-3 text-muted">Contenido</dt>
+                      <dd class="border-b border-ink p-3">{product.size}</dd>
+                    </>
+                  )}
+                  <dt class="label-mono border-b border-ink p-3 text-muted">Disponible</dt>
+                  <dd class="border-b border-ink p-3">Sí</dd>
+                  <dt class="label-mono p-3 text-muted">Actualizado</dt>
+                  <dd class="p-3"><time datetime={product.updatedAt}>{formatDate(product.updatedAt)}</time></dd>
+                </dl>
+              </section>
+            </div>
+          </article>
+
+          {similar.length > 0 && (
+            <section class="mx-auto max-w-7xl sm:px-6" aria-labelledby="similar-title">
+              <h2 id="similar-title" class="border-t-[3px] border-ink px-4 pb-3 pt-6 font-display text-2xl font-black uppercase tracking-tight sm:px-0">
+                Otros productos sin gluten similares
+              </h2>
+              <ProductGrid products={similar} compact />
+            </section>
+          )}
+        </>
+      )
+    }
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  // Coming from NutriFind, "Volver" goes back to the previous search instead of the home page.
+  document.addEventListener("astro:page-load", () => {
+    const back = document.querySelector<HTMLAnchorElement>("[data-back]");
+    if (!back) return;
+    // A new tab has no history to go back to, even if the referrer is NutriFind.
+    const cameFromSite = history.length > 1 && (document.referrer.startsWith(location.origin) || (history.state?.index ?? 0) > 0);
+    if (!cameFromSite) return;
+    back.addEventListener("click", (e) => {
+      e.preventDefault();
+      history.back();
+    });
+  });
+</script>

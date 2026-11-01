@@ -29,5 +29,12 @@ scrapers/.env
 datos_lider.json
 
 # cosas que no se deben subir por que dan igual
+.claude/
+*.bak
 *.md
 !README.md
+
+# Cloudflare / wrangler
+.dev.vars
+.wrangler/
+.playwright-mcp/

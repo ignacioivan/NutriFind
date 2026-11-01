@@ -1,0 +1,107 @@
+---
+import Layout from "../layouts/layout.astro";
+import Header from "../components/header.astro";
+import ProductGrid from "../components/product-grid.astro";
+import NoResults from "../components/no-results.astro";
+import ErrorState from "../components/error-state.astro";
+import Footer from "../components/footer.astro";
+import { PAGE_SIZE, parseFilters, type Filters } from "../lib/search.ts";
+import { DataError, searchProducts, type Product } from "../lib/products.ts";
+
+const filters = parseFilters(Astro.url.searchParams);
+if (!filters.q) return Astro.redirect("/");
+
+let result: { items: Product[]; total: number } | null = null;
+try {
+  result = await searchProducts(filters);
+} catch (e) {
+  if (!(e instanceof DataError)) throw e;
+  console.error(e.message);
+  Astro.response.status = 503;
+}
+
+function urlWith(changes: Partial<Filters>): string {
+  const f = { ...filters, page: 1, ...changes };
+  const p = new URLSearchParams({ q: f.q });
+  if (f.minPrice !== undefined) p.set("precioMin", String(f.minPrice));
+  if (f.maxPrice !== undefined) p.set("precioMax", String(f.maxPrice));
+  if (f.page > 1) p.set("page", String(f.page));
+  return `/buscar?${p}`;
+}
+
+const lastPage = Math.max(1, Math.ceil((result?.total ?? 0) / PAGE_SIZE));
+if (result && filters.page > lastPage) return Astro.redirect(urlWith({ page: lastPage }));
+
+const PRICE_RANGES = [
+  { label: "< $5.000", minPrice: undefined, maxPrice: 4999 },
+  { label: "$5.000 – $10.000", minPrice: 5000, maxPrice: 10000 },
+  { label: "> $10.000", minPrice: 10001, maxPrice: undefined },
+];
+const chips = PRICE_RANGES.map((r) => {
+  const active = r.minPrice === filters.minPrice && r.maxPrice === filters.maxPrice;
+  return {
+    ...r,
+    active,
+    href: active ? urlWith({ minPrice: undefined, maxPrice: undefined }) : urlWith({ minPrice: r.minPrice, maxPrice: r.maxPrice }),
+  };
+});
+const hasPriceFilter = filters.minPrice !== undefined || filters.maxPrice !== undefined;
+---
+
+<Layout title={`“${filters.q}” — NutriFind`} description={`Precios de ${filters.q} sin gluten en supermercados de Chile.`}>
+  <Header q={filters.q} compact />
+  <main class="flex-1">
+    {
+      !result ? (
+        <ErrorState title="No pudimos buscar" message="La base de datos no respondió. Intenta de nuevo en unos segundos." />
+      ) : (
+        <>
+          <div class="border-b border-ink">
+            <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
+              <h1 class="label-mono" aria-live="polite">
+                {result.total} {result.total === 1 ? "resultado" : "resultados"} para “{filters.q}”{result.total > 1 && " — orden: menor precio ↓"}
+              </h1>
+              <ul class="-mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0" aria-label="Filtrar por precio">
+                {chips.map((c) => (
+                  <li>
+                    <a
+                      href={c.href}
+                      aria-current={c.active ? "true" : undefined}
+                      class:list={[
+                        "label-mono inline-flex min-h-11 items-center whitespace-nowrap border-[1.5px] border-ink px-3",
+                        c.active ? "bg-ink text-paper" : "bg-white hover:bg-ink hover:text-paper",
+                      ]}
+                    >
+                      {c.label}
+                      {c.active && <span class="ml-2" aria-label="quitar filtro">×</span>}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {result.total === 0 ? (
+            <NoResults q={filters.q} hasPriceFilter={hasPriceFilter} />
+          ) : (
+            <div class="mx-auto max-w-7xl sm:px-6">
+              <ProductGrid products={result.items} />
+              {lastPage > 1 && (
+                <nav class="label-mono flex items-center justify-between px-4 py-6 sm:px-0" aria-label="Paginación">
+                  {filters.page > 1 ? (
+                    <a href={urlWith({ page: filters.page - 1 })} class="inline-flex min-h-11 items-center border-2 border-ink bg-white px-4 hover:bg-ink hover:text-paper">← Anterior</a>
+                  ) : <span />}
+                  <span>Página {filters.page} de {lastPage}</span>
+                  {filters.page < lastPage ? (
+                    <a href={urlWith({ page: filters.page + 1 })} class="inline-flex min-h-11 items-center border-2 border-ink bg-white px-4 hover:bg-ink hover:text-paper">Siguiente →</a>
+                  ) : <span />}
+                </nav>
+              )}
+            </div>
+          )}
+        </>
+      )
+    }
+  </main>
+  <Footer />
+</Layout>

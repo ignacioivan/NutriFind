@@ -1,0 +1,39 @@
+---
+import { UPCOMING_STORES, type Product } from "../lib/products.ts";
+import { formatCLP } from "../lib/format.ts";
+
+interface Props {
+  product: Product;
+}
+const { product } = Astro.props;
+---
+
+<section class="border-2 border-ink bg-white" aria-labelledby="prices-title">
+  <h2 id="prices-title" class="border-b-8 border-ink px-3 py-2 font-display text-lg font-black uppercase">Precios por tienda</h2>
+  <ul>
+    <li class="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-3 border-b border-ink p-3 sm:grid-cols-[1fr_auto_auto]">
+      <span class="label-mono font-semibold">{product.store}</span>
+      <span class="text-2xl font-black tabular-nums">{formatCLP(product.price)}</span>
+      {
+        product.sourceUrl && (
+          <a
+            href={product.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="label-mono col-span-2 inline-flex min-h-11 items-center justify-center bg-ink px-4 font-semibold text-paper hover:bg-ink/85 sm:col-span-1"
+          >
+            Ir a {product.store} ↗<span class="sr-only"> (se abre en una pestaña nueva)</span>
+          </a>
+        )
+      }
+    </li>
+    {
+      UPCOMING_STORES.map((store) => (
+        <li class="label-mono flex items-center justify-between border-b border-ink p-3 text-muted last:border-b-0">
+          <span>{store}</span>
+          <span>Pronto</span>
+        </li>
+      ))
+    }
+  </ul>
+</section>

@@ -1,0 +1,31 @@
+---
+import { CATEGORIES } from "../lib/categories.ts";
+
+interface Props {
+  q: string;
+  hasPriceFilter?: boolean;
+}
+const { q, hasPriceFilter = false } = Astro.props;
+---
+
+<section class="mx-auto max-w-3xl px-4 pb-16 pt-12 text-center sm:px-6 sm:pt-16">
+  <h2 class="font-display text-3xl font-black uppercase leading-[0.95] tracking-tight break-words sm:text-5xl">Aún no tenemos “{q}”</h2>
+  <p class="mt-4 text-lg">
+    {
+      hasPriceFilter
+        ? "No hay resultados en ese rango de precio. Prueba quitando el filtro o busca algo de esto:"
+        : "Estamos sumando productos y tiendas cada semana. Prueba con algo de esto:"
+    }
+  </p>
+  <ul class="mt-6 flex flex-wrap justify-center gap-2">
+    {
+      CATEGORIES.map((c) => (
+        <li>
+          <a href={`/buscar?q=${encodeURIComponent(c)}`} class="label-mono inline-flex min-h-11 items-center border-[1.5px] border-ink bg-white px-3 hover:bg-ink hover:text-paper">
+            {c}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>

@@ -1,0 +1,23 @@
+---
+import SearchForm from "./search-form.astro";
+
+interface Props {
+  q?: string;
+  compact?: boolean;
+}
+const { q, compact = false } = Astro.props;
+---
+
+<header class="border-b-[3px] border-ink">
+  <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 sm:flex-nowrap sm:px-6">
+    <a href="/" class="font-display text-xl font-black uppercase tracking-tighter">NutriFind</a>
+    {
+      compact && (
+        <div class="order-last w-full sm:order-none sm:flex-1">
+          <SearchForm q={q} />
+        </div>
+      )
+    }
+    <a href="/ingresar" class="label-mono ml-auto inline-flex min-h-11 items-center underline-offset-4 hover:underline">Ingresar</a>
+  </div>
+</header>
