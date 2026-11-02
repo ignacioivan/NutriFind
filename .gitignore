@@ -1,5 +1,7 @@
 .vscode/
 .claude/
+.superpowers/
+.sdd/
 *.bak
 
 # archivos mds que no quiero que se suban jeje
