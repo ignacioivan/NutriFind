@@ -32,7 +32,7 @@ Para la creación de la plataforma utilizaremos diversas tecnologías, seleccion
 
 <div align="left">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=astro,tailwindcss,fastapi&theme=light" />
+    <img src="https://skillicons.dev/icons?i=astro,tailwindcss,react&theme=light" />
   </a>
 </div>
 
@@ -80,15 +80,17 @@ El desarrollo de **NutriFind** se gestiona bajo la **Metodología Ágil Scrum**,
   <img width="1497" height="428" alt="capas horizontal" src="https://github.com/user-attachments/assets/27f63e0f-2054-425f-be41-6591a1dc65d5" />
 </div>
 
+> **Nota (estado actual):** el diagrama muestra el diseño inicial. En la implementación vigente no existe la API FastAPI, el scraping usa cloudscraper (no Playwright) y el despliegue es en Cloudflare Workers (no Pages).
+
 #### ¿Cómo funciona el flujo dentro del diagrama?
 
 Para entender el recorrido de la información de principio a fin, el gráfico se divide en **dos flujos principales** que convergen en la base de datos:
 
 1. **Flujo de Consulta del Usuario (Izquierda a Derecha):**
-   - El **Usuario** accede desde su navegador pasando por la capa de seguridad y CDN de **Cloudflare Pages**.
-   - Interactúa con el **Frontend ('NutriCode')**, construido en **Astro 7** y **Tailwind CSS v4** para las vistas principales, buscador y comparador, junto con islas interactivas en **React 19** para visualizar los gráficos de evolución de precios.
-   - Al realizar una búsqueda o aplicar filtros dietéticos, el Frontend consulta mediante peticiones HTTP/JSON a la **API RESTful en FastAPI**, la cual filtra y retorna los datos almacenados en **Supabase (PostgreSQL)**.
+   - El **Usuario** accede desde su navegador a la aplicación desplegada en **Cloudflare Workers**.
+   - Interactúa con el **Frontend ('NutriCode')**, construido en **Astro 7** (renderizado en servidor) y **Tailwind CSS v4**: inicio, resultados con filtros de precio y paginación, y ficha de producto. El buscador con sugerencias en vivo es una isla interactiva en **React 19**. El comparador de precios y los gráficos de evolución están planificados para el Sprint 4.
+   - Al realizar una búsqueda, las páginas y el endpoint `/api/productos` consultan la API REST (PostgREST) de **Supabase (PostgreSQL)** a través de una única capa de datos (`src/lib/products.ts`). No existe una API intermedia en FastAPI.
 
-2. **Flujo de Extracción Automatizada (Abajo / Derecha hacia Base de Datos):**
-   - De forma programada e independiente del usuario, el **Motor de Web Scraping** (**Playwright + BeautifulSoup4**) navega por los sitios web de **Supermercados y Tiendas Especializadas**.
-   - Los datos crudos extraídos pasan por un **Pipeline de Normalización** en Python (limpieza de texto, estandarización de precios en '$ CLP' y clasificación de etiquetas nutricionales en formato 'JSONB') antes de actualizar el catálogo ('productos_integrales') y el registro histórico de precios en **Supabase**.
+2. **Flujo de Extracción (Abajo / Derecha hacia Base de Datos):**
+   - De forma **manual** por ahora (sin scheduler), los scripts de Python en `NutriCode/scrapers/` descargan con **cloudscraper** y **BeautifulSoup4** el catálogo sin gluten de **Lider.cl**, recorriendo las páginas hasta que no aparecen productos nuevos.
+   - Los datos pasan por una normalización en Python (precio a entero en CLP y deduplicación por nombre con **polars**) y se cargan en la tabla `productos_demo` de **Supabase** mediante *upsert* por `nombre`. Planificado: más tiendas, ejecución programada, `productos_integrales`, historial de precios y atributos nutricionales en `JSONB`.

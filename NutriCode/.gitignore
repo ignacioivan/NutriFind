@@ -30,7 +30,7 @@ datos_lider.json
 
 # cosas que no se deben subir por que dan igual
 .claude/
-.vscode/   
+.vscode/
 *.bak
 *.md
 !README.md
@@ -39,3 +39,4 @@ datos_lider.json
 .dev.vars
 .wrangler/
 .playwright-mcp/
+public/archify/

@@ -1,8 +1,10 @@
+# cosas que no se suben
 .vscode/
 .claude/
 .superpowers/
 .sdd/
 *.bak
+.archify/
 
 # archivos mds que no quiero que se suban jeje
 *.md

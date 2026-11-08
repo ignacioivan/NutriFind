@@ -36,5 +36,8 @@ export default defineConfig({
   },
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      allowedHosts: ['dev.200369.xyz', '.200369.xyz'],
+    },
   },
 });
