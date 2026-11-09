@@ -46,10 +46,6 @@ Para la creación de la plataforma utilizaremos diversas tecnologías, seleccion
 
 ---
 
-### Instrucciones para su ejecución local
-
----
-
 ### Integrantes del equipo y sus roles
 
 | Integrantes        | Roles                               |
