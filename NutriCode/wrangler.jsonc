@@ -5,6 +5,17 @@
   "compatibility_flags": ["nodejs_compat"],
   "vars": {
     "SUPABASE_URL": "https://pzbovbdcaikjirhymfeg.supabase.co"
+  },
+  "env": {
+    "dev": {
+      "name": "nutrifind-dev",
+      "vars": {
+        "SUPABASE_URL": "https://pzbovbdcaikjirhymfeg.supabase.co"
+      },
+      "routes": [
+        { "pattern": "dev.200369.xyz", "custom_domain": true }
+      ]
+    }
   }
-  // SUPABASE_ANON_KEY va como secreto: `npx wrangler secret put SUPABASE_ANON_KEY`. En local se lee de .env
+  // SUPABASE_ANON_KEY va como secreto: `npx wrangler secret put SUPABASE_ANON_KEY --env dev`. En local se lee de .env
 }

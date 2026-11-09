@@ -10,7 +10,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "test": "node --test src/lib/"
+    "test": "node --test src/lib/",
+    "deploy:dev": "astro build && wrangler deploy --name nutrifind-dev",
+    "deploy:prod": "astro build && wrangler deploy"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.4.3",
