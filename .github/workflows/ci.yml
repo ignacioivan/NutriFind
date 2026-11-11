@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: 22
           cache: 'npm'
-          cache-dependency-path: NutriCode/packacge-lock.json
+          cache-dependency-path: NutriCode/package-lock.json
 
       - name: Instalar dependencias limpias
         run: npm ci
