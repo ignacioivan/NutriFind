@@ -1,0 +1,39 @@
+name: CI NutriFind (Calidad y Complicación)
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  check-and-build:
+    name: Verificación de Tipos, Tests y Build
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: NutriCode
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: NutriCode/packacge-lock.json
+
+      - name: Instalar dependencias limpias
+        run: npm ci
+
+      - name: Validar tipos de TypeScript y Astro
+        run: npx astro check
+
+      - name: Ejecutar pruebas unitarias
+        run: npm test
+
+      - name: Compilar para producción 
+        run: npm run build  
