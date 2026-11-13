@@ -120,7 +120,6 @@ NutriFind/
 │   ├── Dockerfile                  # Contenedor Node.js optimizado para desarrollo
 │   ├── compose.yaml                # Orquestación con Docker Compose
 │   └── wrangler.jsonc              # Manifiesto de despliegue en Cloudflare Workers
-├── AGENTS.md                       # Protocolo operativo y guías técnicas para agentes IA
 ├── CONTEXTO.md                     # Bitácora estratégica, historias de usuario y sprint log
 └── README.md                       # Documentación principal del repositorio
 ```
