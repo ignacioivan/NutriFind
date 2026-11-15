@@ -161,3 +161,9 @@ npm test
 ```bash
 docker compose up --build
 ```
+
+#### 5. Pipeline de Scraping con uv (Opcional)
+```bash
+cd scrapers
+uv run prueba.py  # Extracción, normalización y upsert hacia Supabase
+```
