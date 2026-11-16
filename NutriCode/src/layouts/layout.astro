@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import { ClientRouter } from "astro:transitions";
 import { Font } from "astro:assets";
+import SaveToListPopover from "../components/ui/save-to-list-popover.tsx";
 
 interface Props {
   title?: string;
@@ -12,6 +13,7 @@ const {
   title = "NutriFind — Precio justo sin gluten",
   description = "Compara precios de productos sin gluten en supermercados de Chile.",
 } = Astro.props;
+const isAuthenticated = Boolean(Astro.locals.user);
 ---
 
 <!doctype html>
@@ -25,8 +27,35 @@ const {
     <Font cssVariable="--font-archivo" preload />
     <Font cssVariable="--font-plex-mono" />
     <ClientRouter />
+    <script is:inline>
+      // Redirige enlaces de confirmación de correo (#access_token=...&type=signup) hacia /ingresar
+      (function () {
+        var h = window.location.hash;
+        if (!h || h.indexOf("access_token=") === -1) return;
+        var params = new URLSearchParams(h.slice(1));
+        var type = params.get("type");
+        if (type !== "signup" && type !== "email") return;
+        var email = "";
+        try {
+          var token = params.get("access_token") || "";
+          var payloadPart = token.split(".")[1];
+          if (payloadPart) {
+            var base64 = payloadPart.replace(/-/g, "+").replace(/_/g, "/");
+            var json = JSON.parse(atob(base64));
+            if (json && typeof json.email === "string") email = json.email;
+          }
+        } catch (_) {}
+        var target = "/ingresar?verificado=1" + (email ? "&correo=" + encodeURIComponent(email) : "");
+        if (window.location.pathname !== "/ingresar") {
+          window.location.replace(target);
+        } else {
+          window.history.replaceState(null, "", target);
+        }
+      })();
+    </script>
   </head>
   <body class="min-h-dvh flex flex-col">
     <slot />
+    <SaveToListPopover client:idle isAuthenticated={isAuthenticated} />
   </body>
 </html>

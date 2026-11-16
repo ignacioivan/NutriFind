@@ -1,0 +1,57 @@
+---
+import Layout from "../layouts/layout.astro";
+import Header from "../components/header.astro";
+import Footer from "../components/footer.astro";
+import ListsManager from "../components/ui/lists-manager.tsx";
+import { getUserListsWithProducts, type ShoppingListFull } from "../lib/lists.ts";
+
+const user = Astro.locals.user;
+const accessToken = Astro.locals.accessToken;
+
+if (!user || !accessToken) {
+  return Astro.redirect("/ingresar?next=/listas");
+}
+
+let lists: ShoppingListFull[] = [];
+let schemaReady = true;
+
+try {
+  const res = await getUserListsWithProducts(accessToken);
+  lists = res.lists;
+  schemaReady = res.schemaReady;
+} catch {
+  lists = [];
+}
+---
+
+<Layout
+  title="Mis listas de productos — NutriFind"
+  description="Organiza tus listas de compras sin gluten y calcula tu presupuesto en NutriFind."
+>
+  <Header compact />
+  <main class="flex-1">
+    <section class="border-b border-ink bg-paper">
+      <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p class="label-mono text-muted">Cuenta · {user.fullName}</p>
+            <h1 class="mt-1 font-display text-[clamp(2rem,5vw,3.25rem)] font-black uppercase leading-none tracking-tight">
+              Mis listas de <em class="bg-gold px-2 not-italic">productos</em>
+            </h1>
+          </div>
+          <a
+            href="/"
+            class="label-mono inline-flex min-h-11 items-center border-2 border-ink bg-white px-4 font-semibold hover:bg-ink hover:text-paper"
+          >
+            ← Seguir buscando productos
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <ListsManager client:load initialLists={lists} schemaReady={schemaReady} />
+    </section>
+  </main>
+  <Footer />
+</Layout>

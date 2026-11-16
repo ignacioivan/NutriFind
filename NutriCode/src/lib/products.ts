@@ -20,6 +20,23 @@ export type Product = {
   updatedAt: string;
 };
 
+export type PriceHistoryPoint = {
+  id: number;
+  productId: number;
+  store: string;
+  price: number;
+  capturedAt: string;
+};
+
+type PriceHistoryRow = {
+  id_historial: number;
+  product_id: number;
+  tienda: string | null;
+  precio_registrado: number;
+  disponible: boolean;
+  fecha_captura: string;
+};
+
 type Row = {
   id: number;
   nombre: string;
@@ -96,6 +113,18 @@ export async function getProduct(id: number): Promise<Product | null> {
   return items[0] ?? null;
 }
 
+export async function getProductsByIds(ids: number[]): Promise<Product[]> {
+  const cleanIds = Array.from(new Set(ids.filter((n) => Number.isSafeInteger(n) && n > 0))).slice(0, 100);
+  if (cleanIds.length === 0) return [];
+  const params = new URLSearchParams({
+    select: "*",
+    id: `in.(${cleanIds.join(",")})`,
+  });
+  const { items } = await query(params);
+  const byId = new Map(items.map((p) => [p.id, p]));
+  return cleanIds.map((id) => byId.get(id)).filter((p): p is Product => Boolean(p));
+}
+
 export async function featuredProducts(n = 8): Promise<Product[]> {
   const params = new URLSearchParams({ select: "*", order: "created_at.desc,id.desc", limit: String(n) });
   return (await query(params)).items;
@@ -125,4 +154,48 @@ export async function similarProducts(p: Product, n = 4): Promise<Product[]> {
     similar = similar.concat(filler.slice(0, n - similar.length));
   }
   return similar;
+}
+
+const HISTORY_TABLE = "historial_precios";
+
+export async function getProductPriceHistory(product: Product): Promise<PriceHistoryPoint[]> {
+  const fallbackPoint: PriceHistoryPoint = {
+    id: 0,
+    productId: product.id,
+    store: product.store,
+    price: product.price,
+    capturedAt: product.updatedAt,
+  };
+
+  const params = new URLSearchParams({
+    select: "id_historial,product_id,tienda,precio_registrado,disponible,fecha_captura",
+    product_id: `eq.${product.id}`,
+    order: "fecha_captura.asc,id_historial.asc",
+    limit: "30",
+  });
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${HISTORY_TABLE}?${params}`, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+
+    if (!res.ok) return [fallbackPoint];
+
+    const rows = (await res.json()) as PriceHistoryRow[];
+    if (!Array.isArray(rows) || rows.length === 0) return [fallbackPoint];
+
+    return rows.map((r) => ({
+      id: r.id_historial,
+      productId: Number(r.product_id),
+      store: r.tienda || product.store,
+      price: Number(r.precio_registrado),
+      capturedAt: r.fecha_captura,
+    }));
+  } catch {
+    return [fallbackPoint];
+  }
 }
