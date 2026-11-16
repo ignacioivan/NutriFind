@@ -17,22 +17,48 @@ const several = images.length > 1;
         <div class="label-mono grid aspect-square w-full place-items-center text-muted">Sin imagen</div>
       ) : (
         images.map((src, i) => (
-          <img
-            id={`foto-${i + 1}`}
-            src={imageUrl(src, 800)}
-            alt={several ? `${alt} — foto ${i + 1} de ${images.length}` : alt}
-            width="800"
-            height="800"
-            loading={i === 0 ? "eager" : "lazy"}
-            fetchpriority={i === 0 ? "high" : undefined}
-            transition:name={i === 0 ? `img-${productId}` : undefined}
-            onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'label-mono grid aspect-square w-full shrink-0 place-items-center text-muted',textContent:'Sin imagen'}))"
-            class="aspect-square w-full shrink-0 snap-center object-contain p-6 sm:p-10"
-          />
+          <div class="relative aspect-square w-full shrink-0 snap-center" data-img-container>
+            <div
+              data-img-skeleton
+              aria-hidden="true"
+              class="nf-skeleton absolute inset-0 grid place-items-center transition-opacity duration-200"
+            >
+              <span class="font-mono text-xs font-semibold uppercase tracking-wider text-muted/70">
+                Cargando imagen...
+              </span>
+            </div>
+            <img
+              id={`foto-${i + 1}`}
+              src={imageUrl(src, 800)}
+              alt={several ? `${alt} — foto ${i + 1} de ${images.length}` : alt}
+              width="800"
+              height="800"
+              loading={i === 0 ? "eager" : "lazy"}
+              fetchpriority={i === 0 ? "high" : undefined}
+              transition:name={i === 0 ? `img-${productId}` : undefined}
+              onload="this.style.opacity='1';if(this.previousElementSibling){this.previousElementSibling.style.opacity='0';}"
+              onerror="this.parentElement.replaceWith(Object.assign(document.createElement('div'),{className:'label-mono grid aspect-square w-full shrink-0 place-items-center text-muted',textContent:'Sin imagen'}))"
+              style="opacity: 0;"
+              class="relative z-10 size-full object-contain p-6 transition-opacity duration-200 sm:p-10"
+            />
+          </div>
         ))
       )
     }
   </div>
+  <script>
+    function syncGalleryImages() {
+      document.querySelectorAll<HTMLImageElement>("[data-img-container] img").forEach((img) => {
+        if (img.getAttribute("src") && img.complete && img.naturalWidth > 0) {
+          img.style.opacity = "1";
+          const skel = img.parentElement?.querySelector<HTMLElement>("[data-img-skeleton]");
+          if (skel) skel.style.opacity = "0";
+        }
+      });
+    }
+    syncGalleryImages();
+    document.addEventListener("astro:page-load", syncGalleryImages);
+  </script>
   {
     several && (
       <ul class="mt-3 flex gap-2" aria-label="Elegir foto">

@@ -10,7 +10,7 @@ import { DataError, featuredProducts, type Product } from "../lib/products.ts";
 
 let featured: Product[] | null = null;
 try {
-  featured = await featuredProducts(8);
+  featured = await featuredProducts(12);
 } catch (e) {
   if (!(e instanceof DataError)) throw e;
   console.error(e.message);

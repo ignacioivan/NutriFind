@@ -1,11 +1,13 @@
 ---
 import SearchForm from "./search-form.astro";
+import UserMenuDropdown from "./ui/user-menu-dropdown.tsx";
 
 interface Props {
   q?: string;
   compact?: boolean;
 }
 const { q, compact = false } = Astro.props;
+const user = Astro.locals.user;
 ---
 
 <header class="border-b-[3px] border-ink">
@@ -18,6 +20,14 @@ const { q, compact = false } = Astro.props;
         </div>
       )
     }
-    <a href="/ingresar" class="label-mono ml-auto inline-flex min-h-11 items-center underline-offset-4 hover:underline">Ingresar</a>
+    {
+      user ? (
+        <UserMenuDropdown client:load fullName={user.fullName} email={user.email} />
+      ) : (
+        <a href="/ingresar" class="label-mono ml-auto inline-flex min-h-11 items-center underline-offset-4 hover:underline">
+          Ingresar
+        </a>
+      )
+    }
   </div>
 </header>

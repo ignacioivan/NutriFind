@@ -17,5 +17,7 @@
       ]
     }
   }
-  // SUPABASE_ANON_KEY va como secreto: `npx wrangler secret put SUPABASE_ANON_KEY --env dev`. En local se lee de .env
+  // SUPABASE_ANON_KEY va como secreto: `npx wrangler secret put SUPABASE_ANON_KEY` (o `--env dev`). En local se lee de .env
+  // Rate limiting distribuido: usa el KV SESSION auto-provisionado por @astrojs/cloudflare.
+  // Si deseas un KV dedicado para auth, crea uno con `npx wrangler kv namespace create AUTH_RATE_LIMIT` y agrégalo en kv_namespaces.
 }

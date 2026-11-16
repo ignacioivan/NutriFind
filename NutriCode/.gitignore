@@ -33,6 +33,7 @@ datos_lider.json
 .vscode/
 *.bak
 *.md
+SECURITY.md
 !README.md
 
 # Cloudflare / wrangler

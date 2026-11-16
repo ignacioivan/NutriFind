@@ -5,8 +5,12 @@
 .sdd/
 *.bak
 .archify/
+.github
+.workflows
 
 # archivos mds que no quiero que se suban jeje
 *.md
 !README.md
+.playwright-mcp/
+docs/design/
 

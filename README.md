@@ -120,7 +120,6 @@ NutriFind/
 │   ├── Dockerfile                  # Contenedor Node.js optimizado para desarrollo
 │   ├── compose.yaml                # Orquestación con Docker Compose
 │   └── wrangler.jsonc              # Manifiesto de despliegue en Cloudflare Workers
-├── AGENTS.md                       # Protocolo operativo y guías técnicas para agentes IA
 ├── CONTEXTO.md                     # Bitácora estratégica, historias de usuario y sprint log
 └── README.md                       # Documentación principal del repositorio
 ```
@@ -160,10 +159,4 @@ npm test
 #### 4. Ejecución con Docker (Opcional)
 ```bash
 docker compose up --build
-```
-
-#### 5. Pipeline de Scraping con uv (Opcional)
-```bash
-cd scrapers
-uv run prueba.py  # Extracción, normalización y upsert hacia Supabase
 ```

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { formatCLP, extractSize, imageUrl, formatDate } from "./format.ts";
+import { formatCLP, extractSize, imageUrl, formatDate, analyzeProductSpecs } from "./format.ts";
 
 test("formatCLP uses dot thousands separator and no decimals", () => {
   assert.equal(formatCLP(4990), "$4.990");
@@ -28,4 +28,18 @@ test("imageUrl resizes only walmartimages URLs", () => {
 
 test("formatDate in Chilean Spanish without dots", () => {
   assert.equal(formatDate("2026-10-31T12:00:00Z"), "31 oct 2026");
+});
+
+test("analyzeProductSpecs computes pack price, 100g reference and dietary tags", () => {
+  const pack = analyzeProductSpecs("Pack 5, Quinoa Blanca 500gr", 32400);
+  assert.equal(pack.packUnits, 5);
+  assert.equal(pack.unitReferenceLabel, "Valor por unidad");
+  assert.equal(pack.unitReferenceValue, "$6.480 c/u");
+  assert.deepEqual(pack.attributes, ["Sin gluten"]);
+
+  const single = analyzeProductSpecs("Quinoa Pop Sin Endulzar Sin Gluten 240g Bio V", 7990);
+  assert.equal(single.packUnits, undefined);
+  assert.equal(single.unitReferenceLabel, "Ref. por 100 g");
+  assert.equal(single.unitReferenceValue, "$3.329");
+  assert.deepEqual(single.attributes, ["Sin gluten", "Sin endulzar"]);
 });

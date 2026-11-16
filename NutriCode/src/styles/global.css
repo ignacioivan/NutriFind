@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../";
 
 @theme {
   --color-paper: #f4f1ea;
@@ -32,4 +33,62 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.02em;
+}
+
+@keyframes nf-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.nf-skeleton {
+  background-color: #e8e2d6;
+  background-image: linear-gradient(
+    100deg,
+    #e8e2d6 20%,
+    #f7f4ee 48%,
+    #e8e2d6 76%
+  );
+  background-size: 220% 100%;
+  animation: nf-shimmer 1.35s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+[data-lazy-card="pending"] .nf-card-content {
+  opacity: 0;
+  transform: translate3d(0, 6px, 0);
+}
+
+[data-lazy-card="ready"] .nf-card-content {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-lazy-card="pending"] .nf-card-skeleton {
+  opacity: 1;
+  visibility: visible;
+}
+
+[data-lazy-card="ready"] .nf-card-skeleton {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0s linear 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nf-skeleton {
+    animation: none;
+  }
+  [data-lazy-card="ready"] .nf-card-content,
+  [data-lazy-card="ready"] .nf-card-skeleton {
+    transition: none;
+  }
 }
