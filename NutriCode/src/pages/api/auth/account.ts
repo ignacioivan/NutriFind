@@ -43,12 +43,17 @@ async function callSupabaseRpc(
   }
 }
 
-function isLocalDevRequest(url: URL): boolean {
-  return import.meta.env.DEV || url.hostname === "localhost" || url.hostname === "127.0.0.1";
+function isDevStageRequest(url: URL): boolean {
+  return (
+    import.meta.env.DEV ||
+    url.hostname === "localhost" ||
+    url.hostname === "127.0.0.1" ||
+    url.hostname === "dev.200369.xyz"
+  );
 }
 
 export const GET: APIRoute = async ({ locals, url }) => {
-  if (!isLocalDevRequest(url)) {
+  if (!isDevStageRequest(url)) {
     return jsonNoStore({ ok: true, currentUser: locals.user ?? null, rpcReady: false, users: [] });
   }
   const rpcRes = await callSupabaseRpc("dev_list_registered_users", {}, locals.accessToken);
@@ -79,8 +84,8 @@ export const DELETE: APIRoute = async ({ request, url, cookies, locals }) => {
 };
 
 export const POST: APIRoute = async ({ request, url, cookies, locals }) => {
-  if (!isLocalDevRequest(url)) {
-    return jsonNoStore({ error: "Endpoint disponible únicamente en entorno local de desarrollo." }, 403);
+  if (!isDevStageRequest(url)) {
+    return jsonNoStore({ error: "Endpoint disponible únicamente en entorno de desarrollo." }, 403);
   }
   if (!verifySameOrigin(request, url.origin)) {
     return jsonNoStore({ error: "Origen de solicitud no permitido." }, 403);

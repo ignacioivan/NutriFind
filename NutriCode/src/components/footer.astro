@@ -3,7 +3,11 @@ interface Props {
   note?: string;
 }
 const { note = "Precios tomados de cada tienda. Confírmalos antes de comprar." } = Astro.props;
-const isLocalDev = import.meta.env.DEV || Astro.url.hostname === "localhost" || Astro.url.hostname === "127.0.0.1";
+const isDevStage =
+  import.meta.env.DEV ||
+  Astro.url.hostname === "localhost" ||
+  Astro.url.hostname === "127.0.0.1" ||
+  Astro.url.hostname === "dev.200369.xyz";
 ---
 
 <footer class="mt-auto border-t-[3px] border-ink">
@@ -11,7 +15,7 @@ const isLocalDev = import.meta.env.DEV || Astro.url.hostname === "localhost" || 
     <span>NutriFind · Proyecto Capstone Duoc UC</span>
     <div class="flex flex-wrap items-center gap-4 text-muted">
       <span>{note}</span>
-      {isLocalDev && (
+      {isDevStage && (
         <a
           href="/archify/presentacion.html"
           class="font-semibold text-ink underline underline-offset-4 hover:text-gold"

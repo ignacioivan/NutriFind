@@ -11,7 +11,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "test": "node --test 'src/lib/**/*.test.ts'",
-    "deploy:dev": "astro build && wrangler deploy --name nutrifind-dev",
+    "deploy:dev": "CLOUDFLARE_ENV=dev astro build && wrangler deploy",
     "deploy:prod": "astro build && wrangler deploy"
   },
   "dependencies": {
