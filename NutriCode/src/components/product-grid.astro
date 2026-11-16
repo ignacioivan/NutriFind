@@ -9,12 +9,81 @@ interface Props {
 const { products, compact = false } = Astro.props;
 ---
 
-<ul class="grid grid-cols-2 border-t border-ink lg:grid-cols-4">
+<ul class="grid grid-cols-2 border-t border-ink lg:grid-cols-4" data-product-grid>
   {
-    products.map((product) => (
+    products.map((product, idx) => (
       <li class="border-b border-r border-ink [&:nth-child(2n)]:border-r-0 lg:[&:nth-child(2n)]:border-r lg:[&:nth-child(4n)]:border-r-0">
-        <ProductCard product={product} compact={compact} />
+        <ProductCard
+          product={product}
+          compact={compact}
+          index={idx}
+          deferLoad={compact || idx >= 4}
+        />
       </li>
     ))
   }
 </ul>
+
+<script>
+  function initLazyProductCards() {
+    // 1. Marcar imágenes ya cacheadas como visibles de inmediato
+    document.querySelectorAll<HTMLImageElement>("[data-img-container] img").forEach((img) => {
+      if (img.getAttribute("src") && img.complete && img.naturalWidth > 0) {
+        img.style.opacity = "1";
+        const skel = img.parentElement?.querySelector<HTMLElement>("[data-img-skeleton]");
+        if (skel) skel.style.opacity = "0";
+      }
+    });
+
+    const pendingCards = document.querySelectorAll<HTMLElement>('[data-lazy-card="pending"]');
+    if (pendingCards.length === 0) return;
+
+    const revealCard = (card: HTMLElement) => {
+      if (card.dataset.lazyCard !== "pending") return;
+      const img = card.querySelector<HTMLImageElement>("img[data-src]");
+      if (img && img.dataset.src) {
+        img.src = img.dataset.src;
+        img.removeAttribute("data-src");
+        if (img.complete && img.naturalWidth > 0) {
+          img.style.opacity = "1";
+          const skel = card.querySelector<HTMLElement>("[data-img-skeleton]");
+          if (skel) skel.style.opacity = "0";
+        }
+      }
+
+      const col = Number(card.dataset.colIndex ?? "0");
+      const delayMs = 140 + (Number.isFinite(col) ? col * 45 : 0);
+      window.setTimeout(() => {
+        card.dataset.lazyCard = "ready";
+      }, delayMs);
+    };
+
+    if (!("IntersectionObserver" in window)) {
+      pendingCards.forEach(revealCard);
+      return;
+    }
+
+    // Lazy-loading activado cuando la tarjeta está a 300px de entrar al viewport
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const target = entry.target as HTMLElement;
+            obs.unobserve(target);
+            revealCard(target);
+          }
+        }
+      },
+      {
+        root: null,
+        rootMargin: "300px 0px 300px 0px",
+        threshold: 0.01,
+      },
+    );
+
+    pendingCards.forEach((card) => observer.observe(card));
+  }
+
+  initLazyProductCards();
+  document.addEventListener("astro:page-load", initLazyProductCards);
+</script>
