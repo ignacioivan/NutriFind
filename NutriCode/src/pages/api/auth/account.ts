@@ -2,11 +2,14 @@ import type { APIRoute } from "astro";
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from "astro:env/server";
 import {
   clearSessionCookies,
+  getClientIp,
+  getRateLimitStore,
   isSecureRequest,
   jsonNoStore,
   readJsonBody,
   verifySameOrigin,
 } from "../../../lib/auth.ts";
+import { clearAuthFailures } from "../../../lib/rate-limit.ts";
 
 const TIMEOUT_MS = 8000;
 
@@ -83,7 +86,7 @@ export const DELETE: APIRoute = async ({ request, url, cookies, locals }) => {
   });
 };
 
-export const POST: APIRoute = async ({ request, url, cookies, locals }) => {
+export const POST: APIRoute = async ({ request, url, cookies, locals, clientAddress }) => {
   if (!isDevStageRequest(url)) {
     return jsonNoStore({ error: "Endpoint disponible únicamente en entorno de desarrollo." }, 403);
   }
@@ -96,7 +99,28 @@ export const POST: APIRoute = async ({ request, url, cookies, locals }) => {
     return jsonNoStore({ error: "Formato inválido." }, 400);
   }
 
-  const body = parsed.data as { email?: unknown; clearCookies?: unknown };
+  const body = parsed.data as { action?: unknown; email?: unknown; clearCookies?: unknown };
+
+  const ip = getClientIp(request, clientAddress);
+  const store = await getRateLimitStore();
+  const clearMyRateLimit = async () => {
+    await Promise.all([
+      clearAuthFailures(store, "register", ip),
+      clearAuthFailures(store, "login", ip),
+      clearAuthFailures(store, "register", "127.0.0.1"),
+      clearAuthFailures(store, "login", "127.0.0.1"),
+    ]);
+  };
+
+  if (body.action === "unlockRateLimit") {
+    await clearMyRateLimit();
+    return jsonNoStore({
+      ok: true,
+      ip,
+      message: `Bloqueo temporal de registro/login limpiado para la IP ${ip}.`,
+    });
+  }
+
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
   if (!email) {
     return jsonNoStore({ error: "Ingresa el correo del usuario que deseas purgar." }, 400);
@@ -107,6 +131,9 @@ export const POST: APIRoute = async ({ request, url, cookies, locals }) => {
     { target_email: email },
     locals.accessToken,
   );
+
+  // Siempre limpiar también el límite de intentos de esta IP en pruebas QA
+  await clearMyRateLimit();
 
   // Si el usuario purgado es el que tenía la sesión abierta (o si se pidió limpiar cookies), cerramos sesión local
   const secure = isSecureRequest(url, request);
@@ -131,6 +158,7 @@ export const POST: APIRoute = async ({ request, url, cookies, locals }) => {
   return jsonNoStore({
     ok: true,
     result: rpcRes.data,
-    message: `El correo ${email} fue eliminado de auth.users, public.profiles y listas_compras.`,
+    unlockedIp: ip,
+    message: `El correo ${email} fue eliminado y el límite IP (${ip}) fue reiniciado.`,
   });
 };
