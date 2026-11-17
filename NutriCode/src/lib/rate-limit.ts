@@ -1,4 +1,4 @@
-export type AuthAction = "register" | "login";
+export type AuthAction = "register" | "login" | "dev_gate";
 
 export type RateLimitStore = {
   get(key: string): Promise<string | null>;
@@ -48,6 +48,16 @@ const POLICY: Record<
     maxFailures: 5,
     failureWindowMs: 15 * 60 * 1000,
     burstLimit: 8,
+    burstWindowMs: 20 * 1000,
+    baseLockMs: 30 * 60 * 1000,
+    escalatedLockMs: 60 * 60 * 1000,
+    recordTtlSeconds: 2 * 60 * 60,
+  },
+  // Gate staging dev: máximo 5 claves erróneas -> bloqueo 30 min; ráfaga/reincidencia -> 60 min
+  dev_gate: {
+    maxFailures: 5,
+    failureWindowMs: 15 * 60 * 1000,
+    burstLimit: 10,
     burstWindowMs: 20 * 1000,
     baseLockMs: 30 * 60 * 1000,
     escalatedLockMs: 60 * 60 * 1000,

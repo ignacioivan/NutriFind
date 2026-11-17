@@ -32,6 +32,7 @@ export default defineConfig({
     schema: {
       SUPABASE_URL: envField.string({ context: 'server', access: 'public', url: true }),
       SUPABASE_ANON_KEY: envField.string({ context: 'server', access: 'secret' }),
+      DEV_ACCESS_PASSWORD: envField.string({ context: 'server', access: 'secret', optional: true }),
     },
   },
   vite: {
